@@ -1,33 +1,34 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天使神諭卡 Prompt 提示詞生成器</title>
-    <!-- Tailwind CSS -->
+    <title>大師神諭卡 Prompt 生成器 | Angel Oracle Prompt Generator</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter & Noto Serif TC -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Inter Font and Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        oracle: {
-                            bg: '#0b0f19',
-                            card: '#151c2e',
-                            gold: '#d4af37',
-                            goldLight: '#f3e5ab',
-                            goldDark: '#aa820a',
-                            accent: '#2563eb',
-                            text: '#f1f5f9'
-                        }
-                    },
                     fontFamily: {
                         serif: ['"Noto Serif TC"', 'serif'],
-                        sans: ['Inter', 'sans-serif']
+                        cinzel: ['"Cinzel"', 'serif'],
+                    },
+                    colors: {
+                        oracle: {
+                            50: '#fcfaf6',
+                            100: '#f4ede0',
+                            200: '#e5d3b3',
+                            300: '#d3b582',
+                            400: '#c29b59',
+                            500: '#b08039',
+                            600: '#94662d',
+                            700: '#754f24',
+                            800: '#5e3f1e',
+                            900: '#4d3319',
+                        }
                     }
                 }
             }
@@ -35,716 +36,425 @@
     </script>
     <style>
         body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.08) 0%, transparent 40%);
-            background-attachment: fixed;
+            font-family: 'Noto Serif TC', serif;
+            background: linear-gradient(135deg, #1f1a17 0%, #2c2420 50%, #151210 100%);
+            color: #f4ede0;
+            min-height: 100vh;
         }
-        .gold-border {
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(176, 128, 57, 0.2);
         }
-        .gold-glow {
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        .card-glass {
+            background: rgba(44, 36, 32, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 211, 179, 0.15);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0b0f19;
+        ::-webkit-scrollbar-track {
+            background: #1f1a17;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #2a344a;
-            border-radius: 3px;
+        ::-webkit-scrollbar-thumb {
+            background: #754f24;
+            border-radius: 4px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #d4af37;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b08039;
         }
     </style>
 </head>
-<body class="font-sans antialiased min-h-screen flex flex-col">
+<body class="h-full flex flex-col justify-between selection:bg-oracle-500 selection:text-white">
 
-    <!-- Header -->
-    <header class="border-b border-amber-500/20 bg-oracle-card/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <header class="w-full border-b border-oracle-700/40 py-6 px-4 md:px-12 backdrop-blur-md sticky top-0 z-50 bg-[#1f1a17]/90">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-blue-600 flex items-center justify-center text-white shadow-lg">
-                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
-                </div>
+                <span class="text-3xl">✨</span>
                 <div>
-                    <h1 class="font-serif text-lg md:text-xl font-bold text-amber-300 tracking-wide">天使神諭卡 Prompt 生成器</h1>
-                    <p class="text-xs text-slate-400">專為 Gemini 圖像生成打造的一緻性套牌設計工具</p>
+                    <h1 class="text-2xl md:text-3xl font-cinzel font-bold tracking-wider text-oracle-200">Angel Oracle Prompt Generator</h1>
+                    <p class="text-xs text-oracle-400 tracking-widest uppercase">連結大師美學與神諭靈性的 AI 提示詞工具</p>
                 </div>
             </div>
-            <div class="text-xs bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-full flex items-center gap-2">
-                <i class="fa-solid fa-palette"></i>
-                <span>標準卡牌風格：雷諾瓦印象派油畫</span>
+            <!-- External link removed as requested to act as the primary local site -->
+            <div class="flex items-center gap-3">
+                <span class="px-3 py-1.5 rounded-lg bg-oracle-900/60 border border-oracle-700/50 text-oracle-300 text-xs font-cinzel tracking-wider">
+                    🏛️ 完整大師神諭塔羅牌生成系統
+                </span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-7xl mx-auto px-4 md:px-12 py-10 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Panel: Painter Selection & Characteristics (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="card-glass rounded-2xl p-6 glow-effect">
+                <h2 class="text-xl font-cinzel font-bold text-oracle-200 mb-4 flex items-center gap-2">
+                    <span>🎨</span> 選擇畫家藝術風格
+                </h2>
+                <p class="text-sm text-oracle-300/80 mb-6 leading-relaxed">
+                    精選 8 位西方藝術史巨匠，將其標誌性筆觸、光影與色調融入手繪天使神諭卡生成中。
+                </p>
 
-        <!-- Left Column: Inputs & Presets (7 cols) -->
-        <section class="lg:col-span-7 space-y-6">
-
-            <!-- Archangel Quick Presets -->
-            <div class="bg-oracle-card rounded-xl p-5 gold-border shadow-xl">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-amber-400 font-serif font-semibold text-base flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-400"></i> 一鍵載入大天使預設
-                    </h2>
-                    <span class="text-xs text-slate-400">點擊快速填入知名大天使元素</span>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs" id="presets-container">
-                    <!-- Presets dynamically generated via JS -->
+                <!-- Painter Grid buttons -->
+                <div id="painter-grid" class="grid grid-cols-2 gap-3">
+                    <!-- JavaScript will populate painter buttons here -->
                 </div>
             </div>
 
-            <!-- Card Customization Form -->
-            <div class="bg-oracle-card rounded-xl p-5 gold-border shadow-xl space-y-5">
-                <div class="border-b border-slate-700/60 pb-3 flex justify-between items-center">
-                    <h2 class="text-amber-300 font-serif font-semibold text-lg flex items-center gap-2">
-                        <i class="fa-solid fa-pen-ruler"></i> 卡牌元素設定
+            <!-- Painter Details Card -->
+            <div id="painter-details" class="card-glass rounded-2xl p-6 hidden border-l-4 border-l-oracle-400">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 id="detail-name" class="text-lg font-bold text-oracle-200 font-cinzel"></h3>
+                    <span id="detail-era" class="text-xs px-2.5 py-1 rounded-full bg-oracle-900/80 text-oracle-300 border border-oracle-700/50"></span>
+                </div>
+                <p id="detail-desc" class="text-sm text-oracle-300/90 leading-relaxed mb-4"></p>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-start gap-2">
+                        <span class="text-oracle-400 font-bold min-w-[70px]">筆觸特色:</span>
+                        <span id="detail-brush" class="text-oracle-100"></span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-oracle-400 font-bold min-w-[70px]">色彩靈魂:</span>
+                        <span id="detail-color" class="text-oracle-100"></span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-oracle-400 font-bold min-w-[70px]">光影氛圍:</span>
+                        <span id="detail-light" class="text-oracle-100"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Card Customization & Prompt Generator (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            <div class="card-glass rounded-2xl p-6 md:p-8 glow-effect space-y-6">
+                <div>
+                    <h2 class="text-xl font-cinzel font-bold text-oracle-200 mb-1 flex items-center gap-2">
+                        <span>✨</span> 天使神諭卡自定義設定 (23種牌面與牌背)
                     </h2>
-                    <button id="reset-btn" class="text-xs text-slate-400 hover:text-amber-300 transition flex items-center gap-1">
-                        <i class="fa-solid fa-rotate-left"></i> 重置內容
-                    </button>
+                    <p class="text-sm text-oracle-300/80">選擇神諭卡主題、塔羅直式比例與排版風格，即時生成精準 AI 繪圖 Prompt。</p>
                 </div>
 
-                <!-- Section 1: Card Title & Text -->
-                <div class="space-y-4">
-                    <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400/80 flex items-center gap-1.5">
-                        <i class="fa-solid fa-heading"></i> 1. 牌面文字設定 (繁體中文 + 英文)
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">編號</label>
-                            <input type="text" id="card-num" value="02" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">天使中文名</label>
-                            <input type="text" id="card-name-zh" value="大天使加百列" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">天使英文名</label>
-                            <input type="text" id="card-name-en" value="Gabriel" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-300 mb-1">今日指引 (簡短行動提示)</label>
-                        <input type="text" id="card-guidance" value="今天適合真誠表達內心的真實想法。" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-300 mb-1">神諭句 (靈魂核心金句)</label>
-                        <input type="text" id="card-oracle" value="你的聲音充滿著傳遞希望的聖光。" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                    </div>
+                <!-- Oracle Card Archetype Selection -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-oracle-200">1. 選擇神諭卡主題 / 牌面意象 (22個原型 + 1個牌背)</label>
+                    <select id="oracle-archetype" class="w-full bg-[#151210] border border-oracle-700/60 rounded-xl p-3 text-oracle-100 text-sm focus:outline-none focus:border-oracle-400 transition">
+                        <!-- Options generated via JS -->
+                    </select>
                 </div>
 
-                <hr class="border-slate-800">
+                <!-- Custom Symbol / Element Input -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-oracle-200">2. 天使與象徵物自訂細節 (選填)</label>
+                    <input type="text" id="custom-element" placeholder="例：手持黃金權杖、展現溫柔微笑、背景有百合花與星空..." class="w-full bg-[#151210] border border-oracle-700/60 rounded-xl p-3 text-oracle-100 text-sm focus:outline-none focus:border-oracle-400 transition placeholder:text-oracle-700/60">
+                </div>
 
-                <!-- Section 2: Visual & Angel Appearance -->
-                <div class="space-y-4">
-                    <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400/80 flex items-center gap-1.5">
-                        <i class="fa-solid fa-image"></i> 2. 視覺主體與特徵細節
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">核心主色調與光芒</label>
-                            <input type="text" id="visual-color" value="銅金色與白金色光芒，溫暖的聖光" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition" placeholder="例：紫水晶色光芒、翡翠綠光">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">手持法器 / 核心符號道具</label>
-                            <input type="text" id="visual-props" value="手持優雅的金色號角與神聖捲軸" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition" placeholder="例：光劍、琉璃天秤、水晶燈">
-                        </div>
+                <!-- Composition & Border Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-oracle-200">3. 畫面構圖與視角</label>
+                        <select id="composition-style" class="w-full bg-[#151210] border border-oracle-700/60 rounded-xl p-3 text-oracle-100 text-sm focus:outline-none focus:border-oracle-400 transition">
+                            <option value="Centered divine portrait, symmetrical composition, sacred geometry framing">置中神聖半身像 (對稱幾何構圖)</option>
+                            <option value="Dynamic full-body stance, sweeping angelic wings, ethereal upward gaze">動態全身站姿，宏偉天使雙翼</option>
+                            <option value="Close-up serene face, soft glowing halo, intimate spiritual connection">柔和聖顏特寫，發光頭環與神聖連結</option>
+                            <option value="Surrounded by cosmic energy fields, mystical symbols floating in space">宇宙能量場環繞，神秘符號漂浮</option>
+                        </select>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">羽翼與服飾特徵</label>
-                            <input type="text" id="visual-wings" value="巨大的光輝白金色羽翼，華麗柔軟的聖職長袍" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1">背景神聖圖騰 / 花卉象徵</label>
-                            <input type="text" id="visual-bg" value="純潔的白色百合花環繞，背景有日月同輝的光輪圖騰" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-300 mb-1">面貌神情風格 (固定：無性別中性姿態)</label>
-                        <select id="visual-face" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400 transition">
-                            <option value="Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes" selected>中性慈愛：氣質柔和平靜、深邃慈悲的目光</option>
-                            <option value="Androgynous, gender-neutral angel face, firm and courageous expression, inspiring divine look">中性堅毅：果斷充滿力量、莊嚴勇敢的眼神</option>
-                            <option value="Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding">中性睿智：靈性飄逸、充滿洞察力的面容</option>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-oracle-200">4. 卡牌邊框與質感</label>
+                        <select id="border-style" class="w-full bg-[#151210] border border-oracle-700/60 rounded-xl p-3 text-oracle-100 text-sm focus:outline-none focus:border-oracle-400 transition">
+                            <option value="Tarot card format, ornate vintage gold filigree border, weathered parchment texture">塔羅卡牌格式，華麗復古金邊蕾絲，仿舊羊皮紙質感</option>
+                            <option value="Borderless immersive art piece, smooth rounded corners, gallery museum lighting">無邊框沉浸式藝術品，流暢圓角，美術館燈光</option>
+                            <option value="Mystic oracle card, celestial silver constellation engraved border, deep cosmic edge">神秘神諭卡，星空銀河星座雕刻邊框，深邃宇宙邊緣</option>
                         </select>
                     </div>
                 </div>
 
-                <hr class="border-slate-800">
-
-                <!-- Section 3: Art Style Parameters -->
-                <div class="space-y-4">
-                    <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400/80 flex items-center gap-1.5">
-                        <i class="fa-solid fa-paintbrush"></i> 3. 畫風固定規範 (已鎖定雷諾瓦風格)
-                    </h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-check text-emerald-400"></i>
-                            <span><b>構圖：</b>半身特寫（強調臉部與翅膀）</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-check text-emerald-400"></i>
-                            <span><b>畫風：</b>雷諾瓦印象派油畫 (Renoir)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-check text-emerald-400"></i>
-                            <span><b>性別：</b>中性/無性別 (Androgynous)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-check text-emerald-400"></i>
-                            <span><b>外框：</b>新藝術金屬邊框與頂底文字</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Generate Button -->
+                <button id="generate-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-oracle-600 to-oracle-500 hover:from-oracle-500 hover:to-oracle-400 text-oracle-50 font-bold font-cinzel text-base shadow-lg hover:shadow-oracle-500/30 transition duration-300 flex items-center justify-center gap-2 cursor-pointer">
+                    <span>✨</span> 生成天使神諭卡 Prompt
+                </button>
             </div>
 
-        </section>
-
-        <!-- Right Column: Live Prompt Output & Card Mockup (5 cols) -->
-        <section class="lg:col-span-5 space-y-6">
-
-            <!-- Card Visual Mockup Preview -->
-            <div class="bg-oracle-card rounded-xl p-5 gold-border shadow-xl flex flex-col items-center">
-                <div class="w-full flex justify-between items-center mb-3">
-                    <span class="text-xs font-serif font-bold text-amber-300 flex items-center gap-1">
-                        <i class="fa-solid fa-eye"></i> 牌面排版預覽示意
-                    </span>
-                    <span class="text-[10px] text-slate-400">比照先前調校效果</span>
-                </div>
-
-                <!-- Simulated Card -->
-                <div class="w-full max-w-[280px] aspect-[9/14] bg-slate-950 rounded-lg p-3 gold-border flex flex-col justify-between relative shadow-2xl overflow-hidden group">
-                    <!-- Background Glow Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-b from-blue-900/30 via-transparent to-amber-900/30 pointer-events-none"></div>
-
-                    <!-- Top Title -->
-                    <div class="text-center z-10 border-b border-amber-500/30 pb-1.5">
-                        <p class="font-serif text-sm font-bold text-amber-300 tracking-wider">
-                            <span id="mock-num">02</span> | <span id="mock-name-zh">大天使加百列</span> <span id="mock-name-en">Gabriel</span>
-                        </p>
-                    </div>
-
-                    <!-- Center Portrait Mockup Area -->
-                    <div class="flex-1 my-2 rounded border border-amber-500/20 bg-slate-900/60 relative flex flex-col items-center justify-center p-2 text-center overflow-hidden">
-                        <!-- Wings / Aura Icon -->
-                        <div class="text-amber-400/40 text-4xl mb-1">
-                            <i class="fa-solid fa-feather-pointed"></i>
-                        </div>
-                        <p class="text-[11px] text-amber-200/80 font-serif italic" id="mock-visual-summary">
-                            銅金與白金聖光，持號角與捲軸
-                        </p>
-                        <p class="text-[9px] text-slate-400 mt-1">雷諾瓦印象派筆觸・中性無性別半身</p>
-                    </div>
-
-                    <!-- Bottom Text Area -->
-                    <div class="text-center z-10 border-t border-amber-500/30 pt-1.5 space-y-1">
-                        <p class="text-[10px] text-amber-200 font-sans" id="mock-guidance">
-                            今日指引：今天適合真誠表達內心的真實想法。
-                        </p>
-                        <p class="text-[10px] text-amber-300/90 font-serif font-semibold" id="mock-oracle">
-                            神諭：「你的聲音充滿著傳遞希望的聖光。」
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Prompt Output Box -->
-            <div class="bg-oracle-card rounded-xl p-5 gold-border shadow-xl space-y-3">
+            <!-- Output Prompt Box -->
+            <div id="output-section" class="card-glass rounded-2xl p-6 md:p-8 space-y-4 border border-oracle-500/30">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-serif font-bold text-amber-300 text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-code"></i> 生成用的 Gemini 提示詞 (Prompt)
+                    <h3 class="text-sm font-bold text-oracle-300 uppercase tracking-wider flex items-center gap-2">
+                        <span>📜</span> AI 繪圖提示詞 (Midjourney / DALL-E 3 適用)
                     </h3>
-                    <button id="copy-btn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-md">
-                        <i class="fa-solid fa-copy"></i>
-                        <span>複製提示詞</span>
+                    <button id="copy-btn" class="px-3 py-1.5 rounded-lg bg-oracle-800/80 hover:bg-oracle-700 text-oracle-200 text-xs font-medium border border-oracle-600/40 transition duration-200 flex items-center gap-1.5">
+                        <span>📋</span> 複製提示詞
                     </button>
                 </div>
-
-                <div class="relative">
-                    <textarea id="prompt-output" readonly rows="12" class="w-full bg-slate-950 text-amber-100/90 font-mono text-xs p-3 rounded-lg border border-slate-800 focus:outline-none custom-scrollbar leading-relaxed resize-none"></textarea>
+                <div class="bg-[#151210] p-4 rounded-xl border border-oracle-700/40 relative">
+                    <p id="prompt-output" class="text-sm text-oracle-100 font-mono leading-relaxed select-all">
+                        請先在左側選擇一位大師風格並點擊上方生成按鈕...
+                    </p>
                 </div>
-
-                <div class="bg-blue-950/40 border border-blue-800/40 p-3 rounded-lg text-xs text-blue-200/80 flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
-                    <div>
-                        <p class="font-semibold text-blue-300 mb-0.5">使用說明：</p>
-                        <p>點擊上方「複製提示詞」後，直接將文字貼入聊天室即可生成。Gemini 將會嚴格遵循雷諾瓦印象油畫風格與相同的卡牌框面排版！</p>
-                    </div>
+                <div class="flex flex-wrap gap-2 pt-2 text-xs text-oracle-400">
+                    <span class="px-2.5 py-1 rounded bg-oracle-900/60 border border-oracle-800">💡 提示：提示詞已內建標準直式塔羅牌比例（--ar 2:3 或 9:16），複製後可直接貼至 Midjourney V6 或 DALL-E 3 生成！</span>
                 </div>
             </div>
-
-        </section>
+        </div>
 
     </main>
 
-    <!-- Custom Toast Message -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-lg shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
-        <i class="fa-solid fa-check-circle"></i>
-        <span id="toast-msg">已成功複製提示詞！</span>
-    </div>
+    <footer class="w-full border-t border-oracle-700/40 py-6 px-4 text-center text-xs text-oracle-400 bg-[#151210]">
+        <p>Angel Oracle Prompt Generator &copy; 2026. Designed for Master Art Style Tarot & Oracle Collection.</p>
+    </footer>
 
-    <!-- JavaScript Logic -->
     <script>
-        // Preset Archangels Data
-        const archangelPresets = [
+        // Painter Database with Detailed Characteristics
+        const painters = [
             {
-                num: "01",
-                nameZh: "大天使米迦勒",
-                nameEn: "Michael",
-                guidance: "今天適合把 想做「開始做」。",
-                oracle: "你比自己想像中更有力量。",
-                color: "璀璨深藍色光芒與神聖金光，防護與勇氣之光",
-                props: "雙手握著燃燒藍光的正義光劍",
-                wings: "雄偉巨大的流光藍色羽翼",
-                bg: "浩瀚深邃星空與光束守護者陣法",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
+                id: 'davinci',
+                name: '李奧納多·達文西',
+                era: '文藝復興高峯',
+                desc: '運用精湛的暈塗法（Sfumato），結合解剖學精確度與神聖幾何比例，呈現充滿神秘感與智慧的靈性之光。',
+                brush: '極其細膩的暈塗法（Sfumato），無明顯筆觸，空氣感與薄霧疊加',
+                color: '沉穩的大地色調、暗褐、橄欖綠與神聖金色陰影',
+                light: '明暗對照法（Chiaroscuro），柔和且富有戲劇性的神聖側光',
+                promptStyle: 'Renaissance masterpiece by Leonardo da Vinci style, sfumato technique, flawless anatomical precision, mysterious spiritual gaze, subtle light and shadow chiaroscuro'
             },
             {
-                num: "02",
-                nameZh: "大天使加百列",
-                nameEn: "Gabriel",
-                guidance: "注意今天收到的訊息。",
-                oracle: "該被聽見的聲音，不會永遠沉默。",
-                color: "溫暖柔和的純白羽色與輝耀金光",
-                props: "手持精緻金色長號角與神聖訊息信件",
-                wings: "純潔優雅的白金色羽翼",
-                bg: "溫馨的晨曦光芒與金黃日光",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
+                id: 'vangogh',
+                name: '文森·梵谷',
+                era: '後印象派',
+                desc: '以狂熱、厚塗、渦旋狀的強烈筆觸聞名，將大自然與靈性能量轉化為奔放旋轉的星空與炽熱光芒。',
+                brush: '厚塗法（Impasto），厚重、充滿情感的高速旋渦狀筆觸',
+                color: '鮮豔強烈的鈷藍色、鉻黃色、橘紅與對比色調',
+                light: '熾熱流動的星光與靈性能量光暈，充滿動態感',
+                promptStyle: 'Post-Impressionism style by Vincent van Gogh, thick impasto, swirling rhythmic brushstrokes, emotional intensity, glowing celestial energy'
             },
             {
-                num: "03",
-                nameZh: "大天使拉斐爾",
-                nameEn: "Raphael",
-                guidance: "今天請把自己放回優先順位。",
-                oracle: "慢下來，也是一種前進。",
-                color: "翡翠綠色光暈與自然金色微光",
-                props: "掌心托著發光的療癒水晶與琉璃油燈",
-                wings: "柔和帶著金綠色輝芒的羽翼",
-                bg: "寧靜古老的森林與草葉環繞",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
+                id: 'picasso',
+                name: '帕布羅·畢卡索',
+                era: '立體主義 / 現代主義',
+                desc: '打破傳統視覺視角，將天使與神聖形體解構為多重幾何切面與重疊視角，充滿前衛與解構美學。',
+                brush: '強烈、銳利的幾何線條，解構式平面切割與粗獷黑輪廓',
+                color: '強烈對比色、藍色時期憂鬱調或非洲原始藝術色彩',
+                light: '平面化多角度採光，強調結構與形體的抽象張力',
+                promptStyle: 'Cubism modern art style by Pablo Picasso, geometric fragmented planes, multi-angle simultaneous perspectives, bold structural outlines'
             },
             {
-                num: "04",
-                nameZh: "大天使烏列爾",
-                nameEn: "Uriel",
-                guidance: "相信你的判斷力。",
-                oracle: "當你看清真相，選擇自然會出現。",
-                color: "璀璨金黃火焰光芒與智慧光照",
-                props: "手持翻開的神聖古書與智慧火焰",
-                wings: "輝煌耀眼的金色羽翼",
-                bg: "通往智慧的燦爛光之道路與幾何光環",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
+                id: 'rousseau',
+                name: '亨利·盧梭',
+                era: '素人藝術 / 稚拙派',
+                desc: '充滿童趣與神祕熱帶叢林奇幻感的風格。葉片精細描繪，色彩純淨飽滿，洋溢著原始、純真且夢幻的烏托邦氣息。',
+                brush: '工整、細緻、一絲不苟的平塗與葉片逐片描繪，稚拙而純真',
+                color: '飽和的翠綠、深藍夜空與純淨鮮豔的花卉色彩',
+                light: '神祕而均勻的夢幻月光或純淨日光，無強烈陰影',
+                promptStyle: 'Naïve art style by Henri Rousseau, magical primitive jungle dreamscape, meticulous leaf-by-leaf detail, pure saturated colors, surreal innocence'
             },
             {
-                num: "05",
-                nameZh: "大天使夏彌爾",
-                nameEn: "Chamuel",
-                guidance: "珍惜真正讓你感到安心的人。",
-                oracle: "真正的愛，不需要你一直證明自己值得。",
-                color: "柔和浪漫的粉紅光與心形微粒",
-                props: "雙手溫柔撫胸，掌心散發心形星光",
-                wings: "如粉霞般溫柔綿軟的羽翼",
-                bg: "盛開的粉紅玫瑰花海與愛之幾何圖騰",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
+                id: 'dali',
+                name: '薩爾瓦多·達利',
+                era: '超現實主義',
+                desc: '將夢境與現實奇幻交織。超自然的天使形體融合熔化的時鐘、漂浮懸空的物件與荒誕宏偉的荒漠超現實景觀。',
+                brush: '極其寫實的學院派細膩筆觸，營造出逼真的幻覺夢境',
+                color: '荒涼的金黃沙漠、神祕深藍夜空與超現實高對比色彩',
+                light: '戲劇性、超自然的奇幻光影，長陰影與強烈聚焦',
+                promptStyle: 'Surrealism style by Salvador Dalí, dreamlike hyper-realistic bizarre elements, melting optical illusions, vast mystical landscapes, uncanny atmosphere'
             },
             {
-                num: "06",
-                nameZh: "大天使愛麗兒",
-                nameEn: "Ariel",
-                guidance: "留意身邊已經擁有的資源。",
-                oracle: "你正在擁有的，比你以為的更多。",
-                color: "翠綠自然光彩與溫暖金色日光",
-                props: "身旁守護著靈動的聖鹿與璀璨晶石",
-                wings: "自然葉脈圖騰充滿生命力的羽翼",
-                bg: "充滿生機的森林、繁花與金光點綴",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
+                id: 'millet',
+                name: '讓-弗朗索瓦·米勒',
+                era: '寫實主義 / 巴比松派',
+                desc: '樸實、莊嚴而富有大自然勞動神聖感的畫風。以沉穩厚重的大地氣息，展現天使如大地母親般溫柔、安定的守護。',
+                brush: '沉穩、紮實、帶有粗糙布紋質感的質樸筆觸',
+                color: '質樸的大地色、麥穗金、暗褐與黃昏微光色調',
+                light: '黃昏或清晨溫柔的漫射光（Crepuscular rays），神聖而謙卑',
+                promptStyle: 'Realism style by Jean-François Millet, earthy and rustic texture, humble divine dignity, warm dusk crepuscular light, pastoral sacred atmosphere'
             },
             {
-                num: "07",
-                nameZh: "大天使韓尼爾",
-                nameEn: "Haniel",
-                guidance: "相信第一個浮現的感覺。",
-                oracle: "有些答案，是心比理智更早知道。",
-                color: "清澈的月光銀光與深邃藍夜",
-                props: "腳下為平靜水面，映照繁星與月影",
-                wings: "銀白月華質感的聖潔羽翼",
-                bg: "浩瀚星空下澄澈明亮的新月與水面倒影",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
+                id: 'renoir',
+                name: '皮埃爾-奧古斯特·雷諾瓦',
+                era: '印象派',
+                desc: '溫柔、歡愉且充滿光影跳動感。以羽毛般輕柔的斑駁筆觸與溫暖柔和的粉嫩色調，描繪天使純潔溫馨的愛。',
+                brush: '輕盈、碎裂、跳躍的短筆觸，融合溫柔細緻的人體肌理',
+                color: '溫暖的玫瑰紅、珍珠白、金黃與柔和粉嫩色系',
+                light: '陽光穿透樹葉的斑駁光點（Dappled sunlight），充滿溫馨歡愉',
+                promptStyle: 'Impressionism style by Pierre-Auguste Renoir, soft dappled sunlight, warm pastel tones, feathery delicate brushstrokes, joyous angelic tenderness'
             },
             {
-                num: "08",
-                nameZh: "大天使拉結爾",
-                nameEn: "Raziel",
-                guidance: "讓未知暫時保持未知。",
-                oracle: "當時機成熟，隱藏的答案會自己出現。",
-                color: "神秘的紫色與深藍星河交織",
-                props: "手中懸浮著記載宇宙奧秘的發光神聖書籍",
-                wings: "帶有星芒與星座線條的藍紫羽翼",
-                bg: "宇宙光門、流動星河與繁密星座圖騰",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
-            },
-            {
-                num: "09",
-                nameZh: "大天使查德基爾",
-                nameEn: "Zadkiel",
-                guidance: "把不屬於現在的情緒留在過去。",
-                oracle: "放下不是失去，而是把自由還給自己。",
-                color: "轉化的紫羅蘭色火焰與絢麗紫光",
-                props: "掌心環繞著流動的紫光與轉化靈氣",
-                wings: "輕盈帶有光點的紫羅蘭羽翼",
-                bg: "圍繞身側象徵蛻變飛昇的發光紫蝴蝶",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "10",
-                nameZh: "大天使傑瑞米爾",
-                nameEn: "Jeremiel",
-                guidance: "回顧不是倒退。",
-                oracle: "你的過去不是枷鎖，而是一張地圖。",
-                color: "暖橙暮光與金色夕陽餘暉",
-                props: "面前懸浮著映照時光過往的靈性鏡子",
-                wings: "夕陽沉穩金色與赭紅色的羽翼",
-                bg: "延伸至遠方城堡都市的夕陽大道",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
-            },
-            {
-                num: "11",
-                nameZh: "大天使約菲爾",
-                nameEn: "Jophiel",
-                guidance: "今天刻意做一件讓自己開心的事。",
-                oracle: "你值得擁有不需要理由的快樂。",
-                color: "璀璨金黃色陽光與彩虹般亮麗光芒",
-                props: "身側紛飛著金光點點的發光蝴蝶",
-                wings: "華麗亮眼綻放耀眼金光的羽翼",
-                bg: "繁花盛開的黃金花園與溫暖陽光",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "12",
-                nameZh: "大天使拉貴爾",
-                nameEn: "Raguel",
-                guidance: "真正的和平必須建立在公平上。",
-                oracle: "好的關係，不會只有一個人在努力。",
-                color: "柔和淡藍天空色與和諧純白光束",
-                props: "托著代表和諧公平的發光黃金天秤",
-                wings: "對稱平衡且端莊優雅的兩扇白藍羽翼",
-                bg: "晴朗澄澈的天空與兩道完美交會的和諧光芒",
-                face: "Androgynous, gender-neutral angel face, firm and courageous expression, inspiring divine look"
-            },
-            {
-                num: "13",
-                nameZh: "大天使桑達芬",
-                nameEn: "Sandalphon",
-                guidance: "今天完成一件讓未來更靠近的小事。",
-                oracle: "願望需要被說出來，也需要被實現。",
-                color: "溫暖璀璨的金星光與靈性音符光束",
-                props: "雙手合十祈禱，散發著神聖的音符光彩",
-                wings: "修長優雅帶有音符微光的金色羽翼",
-                bg: "鋪滿繁星的璀璨黃金道路與祈禱光芒",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "14",
-                nameZh: "大天使麥達昶",
-                nameEn: "Metatron",
-                guidance: "不要害怕成為「新的自己」。",
-                oracle: "成長的你，不必再回到過去的模樣。",
-                color: "浩瀚白金光與高頻銀紫光芒",
-                props: "胸前旋轉懸浮著麥達昶立方體（Metatron's Cube）幾何光陣",
-                wings: "宏大浩瀚無邊的金紫星空色羽翼",
-                bg: "深邃的金紫色宇宙星空與高頻幾何光輪",
-                face: "Androgynous, gender-neutral angel face, firm and courageous expression, inspiring divine look"
-            },
-            {
-                num: "15",
-                nameZh: "大天使奧瑞恩",
-                nameEn: "Orion",
-                guidance: "把夢想想得更大一點。",
-                oracle: "你敢想像的未來，才有機會成為現實。",
-                color: "深邃宇宙藍紫光與閃耀銀河星輝",
-                props: "身後聳立著連通未知的璀璨宇宙星門",
-                wings: "宛如獵戶座星系織就的暗藍星辰羽翼",
-                bg: "無垠宇宙、獵戶座連線與流動銀河",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
-            },
-            {
-                num: "16",
-                nameZh: "大天使塞拉菲爾",
-                nameEn: "Seraphiel",
-                guidance: "少一點雜訊，多一點自己。",
-                oracle: "當你清空不需要的，真正重要的才有位置。",
-                color: "極致純淨的純白光與白金光暈",
-                props: "掌心呈現無暇透明的神聖水晶發光體",
-                wings: "耀眼多重且極度純淨無瑕的白金羽翼",
-                bg: "高空神聖雲海與純淨無瑕的光之境界",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
-            },
-            {
-                num: "17",
-                nameZh: "希望天使",
-                nameEn: "Hope",
-                guidance: "不要因為今天的陰影否定明天。",
-                oracle: "曙光總是在最黑暗之後出現。",
-                color: "溫暖破曉的金白日出晨光",
-                props: "前方有展翅飛向陽光的白鴿與希望之鳥",
-                wings: "如曙光般金白交織的輝煌羽翼",
-                bg: "遠方山巒間升起的金黃日出與破曉雲彩",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "18",
-                nameZh: "信念天使",
-                nameEn: "Faith",
-                guidance: "相信自己的選擇。",
-                oracle: "你不需要別人的允許，才能相信自己。",
-                color: "堅毅耀眼的白金聖光與深藍護甲",
-                props: "胸口綻放著代表堅定內在價值的璀璨水晶",
-                wings: "高聳堅固宛如盾牌護衛的白金羽翼",
-                bg: "神聖莊嚴的星空背景與璀璨靈光",
-                face: "Androgynous, gender-neutral angel face, firm and courageous expression, inspiring divine look"
-            },
-            {
-                num: "19",
-                nameZh: "慈悲天使",
-                nameEn: "Charity",
-                guidance: "今天對自己說一句溫柔的話。",
-                oracle: "真正的慈悲，也包括善待自己。",
-                color: "極致溫暖柔和的金粉色聖光",
-                props: "雙手溫柔向前捧出愛與祝福，周圍圍繞著白玫瑰",
-                wings: "柔和包裹身側的溫暖白色羽翼",
-                bg: "盛開的純白玫瑰花海與柔金微粒",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "20",
-                nameZh: "大天使阿茲瑞爾",
-                nameEn: "Azrael",
-                guidance: "允許自己迎接新的階段。",
-                oracle: "有些門關上，是因為另一扇門正在打開。",
-                color: "深邃優雅的暮光深紫與靜謐金光",
-                props: "掌心飛舞著象徵靈魂轉化重生的發光蝴蝶",
-                wings: "帶有深紫與金褐色光澤的沉穩羽翼",
-                bg: "暮光漸變天際、落葉飄零與破土而出的新芽",
-                face: "Androgynous, gender-neutral angel face, serene and gentle expression, deep compassionate eyes"
-            },
-            {
-                num: "21",
-                nameZh: "大天使丹尼爾",
-                nameEn: "Daniel",
-                guidance: "不要把「猶豫」誤認成「謹慎」。",
-                oracle: "選擇不一定完美，但不選也是一種選擇。",
-                color: "清晰睿智的金黃光線與王者耀金",
-                props: "手持精緻的黃金羽毛筆與智慧皇冠",
-                wings: "莊嚴且開闊舒展的金藍羽翼",
-                bg: "前方分岔並充滿耀眼金色光線的兩條光明道路",
-                face: "Androgynous, gender-neutral angel face, firm and courageous expression, inspiring divine look"
-            },
-            {
-                num: "22",
-                nameZh: "紫水晶天使",
-                nameEn: "Amethyst",
-                guidance: "不要害怕改變。",
-                oracle: "你正在蛻變成更接近自己的模樣。",
-                color: "璀璨高頻的深紫色與紫水晶晶螢光澤",
-                props: "手持或懸浮著發光的大型紫水晶原礦",
-                wings: "帶有紫色星塵流動的絢麗紫光羽翼",
-                bg: "旋轉的紫光漩渦與飛舞的紫色發光蝴蝶",
-                face: "Androgynous, gender-neutral angel face, ethereal and wise look, illuminated by divine understanding"
+                id: 'monet',
+                name: '克勞德·莫奈',
+                era: '印象派 (光影大師)',
+                desc: '極致追求光影與大氣變化的光色交織大師。將天使融入滿盈的睡蓮、水面波光與空氣中顫動的光彩粒子中。',
+                brush: '快速、重疊、捕捉瞬間光影變化的短碎筆觸與色彩交織',
+                color: '水藍、淡紫、莫奈花園粉綠與迷離清透的光色',
+                light: '空氣中漫射的晨光、暮靄與水面反射的波光粼粼',
+                promptStyle: 'Impressionism style by Claude Monet, shimmering water reflections, atmospheric light vibration, loose broken color touches, ethereal misty radiance'
             }
         ];
 
-        // DOM Elements
-        const cardNumEl = document.getElementById('card-num');
-        const cardNameZhEl = document.getElementById('card-name-zh');
-        const cardNameEnEl = document.getElementById('card-name-en');
-        const cardGuidanceEl = document.getElementById('card-guidance');
-        const cardOracleEl = document.getElementById('card-oracle');
+        // 23 Angel Oracle Card Archetypes (22張天使神諭卡核心原型 + 1張牌背設計)
+        const oracleArchetypes = [
+            "01. The Archangel Michael (大天使彌迦勒 - 勇氣與保護)",
+            "02. The Archangel Raphael (大天使拉斐爾 - 療癒與健康)",
+            "03. The Archangel Gabriel (大天使加百列 - 訊息與覺醒)",
+            "04. The Archangel Uriel (大天使烏列爾 - 智慧與光明)",
+            "05. The Angel of Love (愛的天使 - 無條件的愛與連結)",
+            "06. The Angel of Abundance (豐盛天使 - 財富與天賦開啟)",
+            "07. The Angel of Peace (和平天使 - 內在寧靜與和解)",
+            "08. The Guardian Angel (守護天使 - 無時無刻的庇佑)",
+            "09. The Angel of Transformation (轉化天使 - 破繭重生與蛻變)",
+            "10. The Angel of Hope (希望天使 - 黑暗中的星光與信賴)",
+            "11. The Angel of Wisdom (智慧天使 - 靈性覺知與真理)",
+            "12. The Angel of Forgiveness (寬恕天使 - 釋放過去與心靈解脫)",
+            "13. The Angel of Creativity (創造天使 - 藝術靈感與生命之泉)",
+            "14. The Angel of Joy (喜悅天使 - 純真快樂與慶典)",
+            "15. The Angel of Strength (力量天使 - 堅定意志與內在韌性)",
+            "16. The Angel of Grace (恩典天使 - 神聖祝福與順流)",
+            "17. The Angel of Destiny (命運天使 - 生命藍圖與靈魂使命)",
+            "18. The Angel of Dreams (夢境天使 - 直覺指引與潛意識探索)",
+            "19. The Angel of Truth (真理天使 - 誠實面對自我與澄澈)",
+            "20. The Angel of Rebirth (重生天使 - 新的循環與契機)",
+            "21. The Angel of Compassion (慈悲天使 - 深度同理與溫柔擁抱)",
+            "22. The Cosmic Angel (宇宙天使 - 連結萬物與無限合一)",
+            "23. [牌背設計] Mystical Tarot Card Back Pattern (神聖幾何星際天使牌背設計)"
+        ];
 
-        const visualColorEl = document.getElementById('visual-color');
-        const visualPropsEl = document.getElementById('visual-props');
-        const visualWingsEl = document.getElementById('visual-wings');
-        const visualBgEl = document.getElementById('visual-bg');
-        const visualFaceEl = document.getElementById('visual-face');
+        let selectedPainter = painters[0];
 
-        const mockNum = document.getElementById('mock-num');
-        const mockNameZh = document.getElementById('mock-name-zh');
-        const mockNameEn = document.getElementById('mock-name-en');
-        const mockGuidance = document.getElementById('mock-guidance');
-        const mockOracle = document.getElementById('mock-oracle');
-        const mockVisualSummary = document.getElementById('mock-visual-summary');
+        // Initialize DOM Elements
+        function initApp() {
+            const gridContainer = document.getElementById('painter-grid');
+            const selectContainer = document.getElementById('oracle-archetype');
 
-        const promptOutput = document.getElementById('prompt-output');
-        const copyBtn = document.getElementById('copy-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const presetsContainer = document.getElementById('presets-container');
-
-        // Render Preset Buttons
-        function renderPresets() {
-            presetsContainer.innerHTML = '';
-            archangelPresets.forEach((p) => {
+            // Render Painter Buttons
+            painters.forEach((painter, index) => {
                 const btn = document.createElement('button');
-                btn.className = "bg-slate-900/90 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-400 text-slate-200 px-2.5 py-1.5 rounded-md text-left transition flex items-center justify-between group";
+                btn.className = `p-3 rounded-xl text-left border transition duration-300 flex flex-col justify-between cursor-pointer ${index === 0 ? 'bg-oracle-700/50 border-oracle-400 text-oracle-100 shadow-lg' : 'bg-[#151210]/60 border-oracle-700/40 text-oracle-300 hover:bg-oracle-900/50 hover:text-oracle-200'}`;
                 btn.innerHTML = `
-                    <span class="font-medium truncate group-hover:text-amber-300">${p.num} ${p.nameZh}</span>
-                    <i class="fa-solid fa-chevron-right text-[10px] text-slate-500 group-hover:text-amber-400"></i>
+                    <span class="font-bold text-sm font-cinzel">${painter.name}</span>
+                    <span class="text-xs text-oracle-400 mt-1">${painter.era}</span>
                 `;
-                btn.addEventListener('click', () => applyPreset(p));
-                presetsContainer.appendChild(btn);
+                btn.onclick = () => selectPainter(painter, btn);
+                gridContainer.appendChild(btn);
             });
+
+            // Render Oracle Archetypes
+            oracleArchetypes.forEach(archetype => {
+                const opt = document.createElement('option');
+                opt.value = archetype;
+                opt.textContent = archetype;
+                selectContainer.appendChild(opt);
+            });
+
+            // Show initial painter details
+            updatePainterDetails();
+            updatePrompt();
+
+            // Event Listeners for real-time prompt update
+            document.getElementById('oracle-archetype').onchange = updatePrompt;
+            document.getElementById('custom-element').oninput = updatePrompt;
+            document.getElementById('composition-style').onchange = updatePrompt;
+            document.getElementById('border-style').onchange = updatePrompt;
+
+            // Generate button click animation/action
+            document.getElementById('generate-btn').onclick = () => {
+                updatePrompt();
+                const outputBox = document.getElementById('output-section');
+                outputBox.classList.add('ring-2', 'ring-oracle-400');
+                setTimeout(() => outputBox.classList.remove('ring-2', 'ring-oracle-400'), 800);
+            };
+
+            // Copy button listener
+            document.getElementById('copy-btn').onclick = copyPromptToClipboard;
         }
 
-        // Apply Preset Data
-        function applyPreset(p) {
-            cardNumEl.value = p.num;
-            cardNameZhEl.value = p.nameZh;
-            cardNameEnEl.value = p.nameEn;
-            cardGuidanceEl.value = p.guidance;
-            cardOracleEl.value = p.oracle;
-
-            visualColorEl.value = p.color;
-            visualPropsEl.value = p.props;
-            visualWingsEl.value = p.wings;
-            visualBgEl.value = p.bg;
-            visualFaceEl.value = p.face;
-
-            updateAll();
-            showToast(`已成功載入「${p.nameZh}」資料`);
-        }
-
-        // Build Master Prompt
-        function generateMasterPrompt() {
-            const num = cardNumEl.value.trim();
-            const nameZh = cardNameZhEl.value.trim();
-            const nameEn = cardNameEnEl.value.trim();
-            const guidance = cardGuidanceEl.value.trim();
-            const oracle = cardOracleEl.value.trim();
-
-            const color = visualColorEl.value.trim();
-            const props = visualPropsEl.value.trim();
-            const wings = visualWingsEl.value.trim();
-            const bg = visualBgEl.value.trim();
-            const faceSelection = visualFaceEl.value;
-
-            // Template prompt for Gemini image generation
-            const promptText = 
-`請幫我設計並生成一張神諭卡牌圖像，風格需與雷諾瓦印象派油畫完全一致。
-
-【卡牌版面與尺寸要求】
-1. 尺寸比例：標準直式塔羅卡牌比例 9:16（Vertical Tarot Card Ratio 9:16），請務必保持狹長直向矩形卡牌形狀，切勿生成橫圖或正方形圖。
-2. 頂部標題文字：${num} | ${nameZh} ${nameEn}
-3. 牌面下半部文字：
-   - 今日指引：${guidance}
-   - 神諭：「${oracle}」
-4. 牌面整體結構：具有典雅的新藝術金色邊框（Ornate Art Nouveau gold frame），頂部與底部有優雅的裝飾線條。文字字體需清晰、繁體中文與英文工整優美。
-
-【圖像主體與風格指令】
-- **構圖與比例**: 標準 9:16 直向卡牌（Aspect ratio 9:16），半身肖像特寫（Half-body bust portrait），強調臉部神情與展翅的翅膀（Emphasizing facial features and majestic wings）。
-- **天使面貌性別**: 中性/無性別（Androgynous, gender-neutral angel face），臉龐柔和中帶有神聖威嚴，眉宇平靜，沒有明顯男女特徵。
-- **藝術風格**: 皮埃爾-奧古斯特·雷諾瓦 (Pierre-Auguste Renoir) 印象派油畫風格。豐富而柔軟的油畫筆觸質感（soft, impressionistic oil paint texture, luminous brushstrokes），帶有柔合神聖的光芒。
-- **色彩與視覺**: ${color}。
-- **翅膀細節**: ${wings}。
-- **法器/手持道具**: ${props}。
-- **背景與象徵圖騰**: ${bg}。
-
-請確保卡牌嚴格採用直式 9:16 塔羅牌黃金比例、色彩和諧一致、視覺中心聚焦於天使中性面容與強大的守護羽翼，展現高質感神諭卡套牌的一貫視覺風格。`;
-
-            return promptText;
-        }
-
-        // Update Real-time Preview and Textarea
-        function updateAll() {
-            // Update Mockup
-            mockNum.textContent = cardNumEl.value.trim() || "00";
-            mockNameZh.textContent = cardNameZhEl.value.trim() || "大天使";
-            mockNameEn.textContent = cardNameEnEl.value.trim() || "Angel";
-            mockGuidance.textContent = "今日指引：" + (cardGuidanceEl.value.trim() || "...");
-            mockOracle.textContent = "神諭：「" + (cardOracleEl.value.trim() || "...") + "」";
-            mockVisualSummary.textContent = `${visualColorEl.value.trim()}，${visualPropsEl.value.trim()}`;
-
-            // Update Textarea
-            promptOutput.value = generateMasterPrompt();
-        }
-
-        // Copy to Clipboard (iframe safe)
-        function copyToClipboard() {
-            const textToCopy = promptOutput.value;
+        function selectPainter(painter, clickedBtn) {
+            selectedPainter = painter;
             
-            // Try standard clipboard API first
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    showToast('提示詞已複製到剪貼簿！');
-                }).catch(() => {
-                    fallbackCopy(textToCopy);
-                });
+            // Update button styles in grid
+            const buttons = document.querySelectorAll('#painter-grid button');
+            buttons.forEach(b => {
+                b.className = 'p-3 rounded-xl text-left border transition duration-300 flex flex-col justify-between cursor-pointer bg-[#151210]/60 border-oracle-700/40 text-oracle-300 hover:bg-oracle-900/50 hover:text-oracle-200';
+            });
+            clickedBtn.className = 'p-3 rounded-xl text-left border transition duration-300 flex flex-col justify-between cursor-pointer bg-oracle-700/50 border-oracle-400 text-oracle-100 shadow-lg';
+
+            updatePainterDetails();
+            updatePrompt();
+        }
+
+        function updatePainterDetails() {
+            const detailsCard = document.getElementById('painter-details');
+            detailsCard.classList.remove('hidden');
+            document.getElementById('detail-name').textContent = selectedPainter.name;
+            document.getElementById('detail-era').textContent = selectedPainter.era;
+            document.getElementById('detail-desc').textContent = selectedPainter.desc;
+            document.getElementById('detail-brush').textContent = selectedPainter.brush;
+            document.getElementById('detail-color').textContent = selectedPainter.color;
+            document.getElementById('detail-light').textContent = selectedPainter.light;
+        }
+
+        function updatePrompt() {
+            const archetype = document.getElementById('oracle-archetype').value;
+            const customElement = document.getElementById('custom-element').value.trim();
+            const composition = document.getElementById('composition-style').value;
+            const border = document.getElementById('border-style').value;
+
+            // Check if it's card back
+            let coreSubject = '';
+            if (archetype.includes('[牌背設計]')) {
+                coreSubject = `Mystical tarot card back design, symmetrical sacred geometry, celestial star maps, ornate golden esoteric patterns`;
             } else {
-                fallbackCopy(textToCopy);
+                coreSubject = `An exquisite vertical tarot card depicting "${archetype}"`;
             }
+
+            // Construct Prompt with Explicit Tarot Card Dimensions and Aspect Ratio
+            let promptParts = [
+                coreSubject,
+                selectedPainter.promptStyle,
+                composition,
+                customElement ? `Custom elements: ${customElement}` : '',
+                border,
+                `Vertical tarot card dimensions, aspect ratio 2:3, vertical orientation`,
+                `Masterpiece, highly detailed, divine spiritual energy, 8k resolution, museum gallery quality, breathtaking atmosphere`
+            ];
+
+            const finalPrompt = promptParts.filter(p => p !== '').join(', ') + ' --ar 2:3';
+            document.getElementById('prompt-output').textContent = finalPrompt;
         }
 
-        function fallbackCopy(text) {
-            promptOutput.select();
-            try {
-                document.execCommand('copy');
-                showToast('提示詞已複製到剪貼簿！');
-            } catch (err) {
-                showToast('複製失敗，請手動全選複製');
-            }
-        }
-
-        // Show Toast Notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-msg');
-            toastMsg.textContent = message;
+        function copyPromptToClipboard() {
+            const textToCopy = document.getElementById('prompt-output').textContent;
             
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
+            // Use legacy document.execCommand for safe iFrame compatibility
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
+            try {
+                const successful = document.execCommand('copy');
+                const copyBtn = document.getElementById('copy-btn');
+                if (successful) {
+                    copyBtn.innerHTML = '<span>✅</span> 已複製成功！';
+                    copyBtn.classList.add('bg-emerald-800/80', 'border-emerald-600');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<span>📋</span> 複製提示詞';
+                        copyBtn.classList.remove('bg-emerald-800/80', 'border-emerald-600');
+                    }, 2000);
+                } else {
+                    // Fallback notice
+                    console.log('Copy executed');
+                }
+            } catch (err) {
+                console.error('無法複製文字', err);
+            }
+
+            document.body.removeChild(textArea);
         }
 
-        // Bind Input Event Listeners
-        const inputs = [
-            cardNumEl, cardNameZhEl, cardNameEnEl, cardGuidanceEl, cardOracleEl,
-            visualColorEl, visualPropsEl, visualWingsEl, visualBgEl, visualFaceEl
-        ];
-
-        inputs.forEach(input => {
-            input.addEventListener('input', updateAll);
-            input.addEventListener('change', updateAll);
-        });
-
-        copyBtn.addEventListener('click', copyToClipboard);
-
-        resetBtn.addEventListener('click', () => {
-            applyPreset(archangelPresets[0]);
-        });
-
-        // Initialize on Load
-        window.addEventListener('DOMContentLoaded', () => {
-            renderPresets();
-            updateAll();
-        });
+        // Run initialization on window load
+        window.onload = initApp;
     </script>
 </body>
 </html>
